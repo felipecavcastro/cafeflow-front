@@ -89,3 +89,35 @@ button:hover { background-color: #35271c; }
   background-color: #f5f5f7;
 }
 .aviso-vazio { color: #6e6e73; font-style: italic; background: #e8e8ed; padding: 1rem; border-radius: 6px; }
+
+.status-container {
+  margin-bottom: 1rem;
+}
+
+.btn-reservar {
+  width: 100%;
+  padding: 0.6rem;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-reservar:hover {
+  background-color: #218838;
+}
+
+.global-msg {
+  background-color: #e2f0d9;
+  color: #385723;
+  padding: 0.75rem;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  border-left: 5px solid #28a745;
+}

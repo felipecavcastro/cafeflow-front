@@ -6,51 +6,69 @@ function App() {
   const [password, setPassword] = useState('')
   const [mensagem, setMensagem] = useState('')
 
-  // Estados novos para controlar as telas e carregar as mesas
   const [logado, setLogado] = useState(!!localStorage.getItem('token'))
   const [mesas, setMesas] = useState([])
 
-  // Função para buscar as mesas direto da API Java
   const buscarMesas = async () => {
     const token = localStorage.getItem('token')
-
     try {
       const resposta = await fetch('http://localhost:8080/stations', {
         method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}` // Envia o token para o segurança do Spring
-        }
+        headers: { 'Authorization': `Bearer ${token}` }
       })
-
       if (resposta.ok) {
         const dados = await resposta.json()
         setMesas(dados)
-      } else {
-        setMensagem('❌ Não foi possível carregar as mesas.')
       }
     } catch (erro) {
-      setMensagem('❌ Erro de conexão com o servidor.')
+      setMensagem('❌ Erro de conexão ao carregar mesas.')
     }
   }
 
-  // Roda automaticamente assim que o componente carrega na tela
-  useEffect(() => {
-    if (logado) {
-      buscarMesas()
+  // NOVA FUNÇÃO: Dispara a criação da reserva para o Java
+  const reservarMesa = async (stationId) => {
+    const token = localStorage.getItem('token')
+    setMensagem('Processando sua reserva...')
+
+    try {
+      const resposta = await fetch('http://localhost:8080/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        // Enviamos o valor mínimo de R$ 10,00 exigido pela nossa regra de negócio do Java!
+        body: JSON.stringify({
+          station: { id: stationId },
+          prepaidAmount: 10.0
+        })
+      })
+
+      if (resposta.ok) {
+        setMensagem('✅ Reserva realizada com sucesso!')
+        buscarMesas() // Atualiza a tela na hora para mostrar a mesa como OCUPADA!
+      } else {
+        const erroTexto = await resposta.text()
+        setMensagem(`❌ Erro ao reservar: ${erroTexto || 'Verifique as regras.'}`)
+      }
+    } catch (erro) {
+      setMensagem('❌ Erro ao se conectar com o servidor Java.')
     }
+  }
+
+  useEffect(() => {
+    if (logado) { buscarMesas() }
   }, [logado])
 
   const lidarComLogin = async (e) => {
     e.preventDefault()
     setMensagem('Conectando ao servidor Java...')
-
     try {
       const resposta = await fetch('http://localhost:8080/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
       })
-
       if (resposta.ok) {
         const token = await resposta.text()
         localStorage.setItem('token', token)
@@ -68,9 +86,9 @@ function App() {
     localStorage.removeItem('token')
     setLogado(false)
     setMesas([])
+    setMensagem('')
   }
 
-  // TELA 1: Se não estiver logado, exibe o Formulário de Login
   if (!logado) {
     return (
       <div className="login-container">
@@ -94,7 +112,6 @@ function App() {
     )
   }
 
-  // TELA 2: Se estiver logado, exibe o Painel Principal com as Mesas em tempo real
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
@@ -105,17 +122,32 @@ function App() {
       <main className="dashboard-content">
         <h3>Escolha uma mesa disponível para trabalhar:</h3>
 
+        {mensagem && <p className="mensagem-feedback global-msg">{mensagem}</p>}
+
         {mesas.length === 0 ? (
-          <p className="aviso-vazio">Nenhuma mesa cadastrada no banco de dados. Crie mesas usando o Swagger!</p>
+          <p className="aviso-vazio">Nenhuma mesa cadastrada no banco de dados.</p>
         ) : (
           <div className="grid-mesas">
             {mesas.map((mesa) => (
               <div key={mesa.id} className={`card-mesa ${mesa.available ? 'disponivel' : 'ocupada'}`}>
                 <h4>Mesa #{mesa.id}</h4>
                 <p>Nome/Número: {mesa.name || `Mesa ${mesa.id}`}</p>
-                <span className="badge-status">
-                  {mesa.available ? '🟢 Livre' : '🔴 Ocupada'}
-                </span>
+
+                <div className="status-container">
+                  <span className="badge-status">
+                    {mesa.available ? '🟢 Livre' : '🔴 Ocupada'}
+                  </span>
+                </div>
+
+                {/* BOTÃO DINÂMICO: Só aparece se a mesa estiver livre! */}
+                {mesa.available && (
+                  <button
+                    className="btn-reservar"
+                    onClick={() => reservarMesa(mesa.id)}
+                  >
+                    Reservar Mesa (R$ 10)
+                  </button>
+                )}
               </div>
             ))}
           </div>

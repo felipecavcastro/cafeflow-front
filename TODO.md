@@ -1,0 +1,3 @@
+- [x] Criar tela de login integrada com JWT
+- [x] Listar mesas em tempo real via API
+- [ ] Criar botão de reserva dinâmica nos cartões de mesas livres
