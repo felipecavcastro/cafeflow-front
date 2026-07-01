@@ -95,6 +95,14 @@ button:hover { background-color: #35271c; }
 }
 
 .btn-reservar {
+  display: flex;
+  flex-direction: column; /* Força o texto e o preço a ficarem em linhas separadas */
+  align-items: center;    /* Centraliza os textos na horizontal */
+  justify-content: center; /* Centraliza os textos na vertical */
+  text-align: center;     /* Garante o alinhamento centralizado do texto */
+  gap: 4px;               /* Cria um espaçamento elegante entre a frase e o valor */
+  width: 100%;            /* Garante que o botão ocupe toda a largura disponível no card */
+  box-sizing: border-box; /* Evita que o padding quebre o layout */
   width: 100%;
   padding: 0.6rem;
   background-color: #28a745;

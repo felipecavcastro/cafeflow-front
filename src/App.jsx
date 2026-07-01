@@ -149,8 +149,9 @@ setMensagem('')
                     className="btn-reservar"
                     onClick={() => reservarMesa(mesa.id)}
                   >
-                    Reservar Mesa (R$ 10)
-                  </button>
+                    <span>Reservar Mesa</span>
+                    <span>(R$ 10,00)</span>
+                    </button>
                 )}
               </div>
             ))}
