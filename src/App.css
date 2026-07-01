@@ -129,3 +129,28 @@ button:hover { background-color: #35271c; }
   font-size: 0.95rem;
   border-left: 5px solid #28a745;
 }
+.alternar-container {
+margin-top: 1.2rem;
+text-align: center;
+}
+
+.btn-alternar {
+background: none;
+border: none;
+color: #4a3728;
+text-decoration: underline;
+cursor: pointer;
+font-size: 0.9rem;
+width: auto;padding: 0;
+}
+
+.btn-alternar:hover {color: #6f4e37;}
+
+.select-role {
+width: 100%;
+padding: 0.75rem;
+border: 1px solid #ddd;
+border-radius: 4px;
+background-color: white;
+font-size: 1rem;
+}
