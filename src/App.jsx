@@ -1,94 +1,97 @@
 import { useState, useEffect } from 'react'
-import './App.css'
+import './App.css' 
 
 function App() {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [mensagem, setMensagem] = useState('')
+const [username, setUsername] = useState('')
+const [password, setPassword] = useState('')
+const [mensagem, setMensagem] = useState('') 
 
-  const [logado, setLogado] = useState(!!localStorage.getItem('token'))
-  const [mesas, setMesas] = useState([])
+const [logado, setLogado] = useState(!!localStorage.getItem('token'))
+const [mesas, setMesas] = useState([]) 
 
-  const buscarMesas = async () => {
-    const token = localStorage.getItem('token')
-    try {
-      const resposta = await fetch('http://localhost:8080/stations', {
-        method: 'GET',
-        headers: { 'Authorization': `Bearer ${token}` }
-      })
-      if (resposta.ok) {
-        const dados = await resposta.json()
-        setMesas(dados)
-      }
-    } catch (erro) {
-      setMensagem('❌ Erro de conexão ao carregar mesas.')
-    }
-  }
+// CORREÇÃO 1: Busca de mesas apontando para /stations
+const buscarMesas = async () => {
+const token = localStorage.getItem('token')
+try {
+const resposta = await fetch(`${import.meta.env.VITE_API_URL}/stations`, {
+method: 'GET',
+headers: { 'Authorization': `Bearer ${token}` }
+})
+if (resposta.ok) {
+const dados = await resposta.json()
+setMesas(dados)
+}
+} catch (erro) {
+setMensagem('❌ Erro de conexão ao carregar mesas.')
+}
+} 
 
-  // NOVA FUNÇÃO: Dispara a criação da reserva para o Java
-  const reservarMesa = async (stationId) => {
-    const token = localStorage.getItem('token')
-    setMensagem('Processando sua reserva...')
+// CORREÇÃO 2: Criação da reserva apontando para /bookings
+const reservarMesa = async (stationId) => {
+const token = localStorage.getItem('token')
+setMensagem('Processando sua reserva...') 
 
-    try {
-      const resposta = await fetch('http://localhost:8080/bookings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        // Enviamos o valor mínimo de R$ 10,00 exigido pela nossa regra de negócio do Java!
-        body: JSON.stringify({
-          station: { id: stationId },
-          prepaidAmount: 10.0
-        })
-      })
+try {
+const resposta = await fetch(`${import.meta.env.VITE_API_URL}/bookings`, {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json',
+'Authorization': `Bearer ${token}`
+},
+body: JSON.stringify({
+station: { id: stationId },
+prepaidAmount: 10.0
+})
+}) 
 
-      if (resposta.ok) {
-        setMensagem('✅ Reserva realizada com sucesso!')
-        buscarMesas() // Atualiza a tela na hora para mostrar a mesa como OCUPADA!
-      } else {
-        const erroTexto = await resposta.text()
-        setMensagem(`❌ Erro ao reservar: ${erroTexto || 'Verifique as regras.'}`)
-      }
-    } catch (erro) {
-      setMensagem('❌ Erro ao se conectar com o servidor Java.')
-    }
-  }
+if (resposta.ok) {
+setMensagem('✅ Reserva realizada com sucesso!')
+buscarMesas()
+} else {
+const erroTexto = await resposta.text()
+setMensagem(`❌ Erro ao reservar: ${erroTexto || 'Verifique as regras.'}`)
+}
+} catch (erro) {
+setMensagem('❌ Erro ao se conectar com o servidor Java.')
+}
+} 
 
-  useEffect(() => {
-    if (logado) { buscarMesas() }
-  }, [logado])
+// REMOVIDO: Barras invertidas removidas da dependência [logado]
+useEffect(() => {
+if (logado) { buscarMesas() }
+}, [logado]) 
 
-  const lidarComLogin = async (e) => {
-    e.preventDefault()
-    setMensagem('Conectando ao servidor Java...')
-    try {
-      const resposta = await fetch('http://localhost:8080/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
-      })
-      if (resposta.ok) {
-        const token = await resposta.text()
-        localStorage.setItem('token', token)
-        setLogado(true)
-        setMensagem('')
-      } else {
-        setMensagem('❌ Usuário ou senha incorretos!')
-      }
-    } catch (erro) {
-      setMensagem('❌ Erro: Certifique-se de que o seu Java está ligado!')
-    }
-  }
+const lidarComLogin = async (e) => {
+e.preventDefault()
+setMensagem('Conectando ao servidor Java...')
+try {
+const resposta = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({ username, password }),
+})
+if (resposta.ok) {
+const token = await resposta.text()
+localStorage.setItem('token', token)
+setLogado(true)
+setMensagem('')
+} else {
+setMensagem('❌ Usuário ou senha incorretos!')
+}
+} catch (erro) {
+setMensagem('❌ Erro: Certifique-se de que a API na nuvem está online!')
+}
+} 
 
-  const fazerLogout = () => {
-    localStorage.removeItem('token')
-    setLogado(false)
-    setMesas([])
-    setMensagem('')
-  }
+const fazerLogout = () => {
+localStorage.removeItem('token')
+setLogado(false)
+// REMOVIDO: Barras invertidas de setMesas([])
+setMesas([])
+setMensagem('')
+} 
 
+// RESTAURADO: HTML da tela de login estruturado corretamente
   if (!logado) {
     return (
       <div className="login-container">
@@ -112,6 +115,8 @@ function App() {
     )
   }
 
+
+// RESTAURADO: HTML do Dashboard estruturado corretamente
   return (
     <div className="dashboard-container">
       <header className="dashboard-header">
@@ -139,7 +144,6 @@ function App() {
                   </span>
                 </div>
 
-                {/* BOTÃO DINÂMICO: Só aparece se a mesa estiver livre! */}
                 {mesa.available && (
                   <button
                     className="btn-reservar"
