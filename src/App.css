@@ -40,7 +40,7 @@ button:hover { background-color: #35271c; }
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-.dashboard-header h2 { margin: 0; font-size: 1.4rem; }
+.dashboard-header h2 { margin: 0; font-size: 1.4rem; color: #f5e6d3;}
 
 .btn-logout {
   width: auto;
