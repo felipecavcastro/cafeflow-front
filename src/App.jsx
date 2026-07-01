@@ -174,6 +174,7 @@ function App() {
               <div key={mesa.id} className={`card-mesa ${mesa.available ? "disponivel" : "ocupada"}`}>
                 <h4>Mesa #{mesa.id}</h4>
                 <p>Nome/Número: {mesa.name || `Mesa ${mesa.id}`}</p>
+                <p className="mesa-capacidade">👥 Capacidade: {mesa.capacity || 2} {mesa.capacity === 1 ? 'pessoa' : 'pessoas'}</p>
                 <div className="status-container">
                   <span className="badge-status">
                     {mesa.available ? "🟢 Livre" : "🔴 Ocupada"}

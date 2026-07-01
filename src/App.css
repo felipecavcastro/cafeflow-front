@@ -154,3 +154,10 @@ border-radius: 4px;
 background-color: white;
 font-size: 1rem;
 }
+
+.mesa-capacidade {
+  font-size: 0.9rem;
+  color: #555555;
+  margin-top: -4px;
+  margin-bottom: 12px;
+}
